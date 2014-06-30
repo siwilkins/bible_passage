@@ -86,4 +86,93 @@ describe BiblePassage::BookDataStore do
 
   end
 
+  context "number_of_chapters" do
+
+    def self.it_gets_number_of_chapters(book_key, n)
+      it "returns #{n} for :#{book_key}" do
+        expect(store.number_of_chapters(book_key)).to eq(n)
+      end
+    end
+
+    it_gets_number_of_chapters(:gen, 50)
+    it_gets_number_of_chapters(:exod, 40)
+    it_gets_number_of_chapters(:lev, 27)
+    it_gets_number_of_chapters(:num, 36)
+    it_gets_number_of_chapters(:deut, 34)
+    it_gets_number_of_chapters(:josh, 24)
+    it_gets_number_of_chapters(:judg, 21)
+    it_gets_number_of_chapters(:ruth, 4)
+    it_gets_number_of_chapters('1sam'.to_sym, 31)
+    it_gets_number_of_chapters('2sam'.to_sym, 24)
+    it_gets_number_of_chapters('1kings'.to_sym, 22)
+    it_gets_number_of_chapters('2kings'.to_sym, 25)
+    it_gets_number_of_chapters('1chr'.to_sym, 29)
+    it_gets_number_of_chapters('2chr'.to_sym, 36)
+    it_gets_number_of_chapters(:ezra, 10)
+    it_gets_number_of_chapters(:neh, 13)
+    it_gets_number_of_chapters(:esth, 10)
+    it_gets_number_of_chapters(:job, 42)
+    it_gets_number_of_chapters(:ps, 150)
+    it_gets_number_of_chapters(:prov, 31)
+    it_gets_number_of_chapters(:eccl, 12)
+    it_gets_number_of_chapters(:song, 8)
+    it_gets_number_of_chapters(:isa, 66)
+    it_gets_number_of_chapters(:jer, 52)
+    it_gets_number_of_chapters(:lam, 5)
+    it_gets_number_of_chapters(:ezek, 48)
+    it_gets_number_of_chapters(:dan, 12)
+    it_gets_number_of_chapters(:hos, 14)
+    it_gets_number_of_chapters(:joel, 3)
+    it_gets_number_of_chapters(:amos, 9)
+    it_gets_number_of_chapters(:obad, 1)
+    it_gets_number_of_chapters(:jonah, 4)
+    it_gets_number_of_chapters(:mic, 7)
+    it_gets_number_of_chapters(:nah, 3)
+    it_gets_number_of_chapters(:hab, 3)
+    it_gets_number_of_chapters(:zeph, 3)
+    it_gets_number_of_chapters(:hag, 2)
+    it_gets_number_of_chapters(:zech, 14)
+    it_gets_number_of_chapters(:mal, 4)
+    it_gets_number_of_chapters(:matt, 28)
+    it_gets_number_of_chapters(:mark, 16)
+    it_gets_number_of_chapters(:luke, 24)
+    it_gets_number_of_chapters(:john, 21)
+    it_gets_number_of_chapters(:acts, 28)
+    it_gets_number_of_chapters(:rom, 16)
+    it_gets_number_of_chapters('1cor'.to_sym, 16)
+    it_gets_number_of_chapters('2cor'.to_sym, 13)
+    it_gets_number_of_chapters(:gal, 6)
+    it_gets_number_of_chapters(:eph, 6)
+    it_gets_number_of_chapters(:phil, 4)
+    it_gets_number_of_chapters(:col, 4)
+    it_gets_number_of_chapters('1thess'.to_sym, 5)
+    it_gets_number_of_chapters('2thess'.to_sym, 3)
+    it_gets_number_of_chapters('1tim'.to_sym, 6)
+    it_gets_number_of_chapters('2tim'.to_sym, 4)
+    it_gets_number_of_chapters(:titus, 3)
+    it_gets_number_of_chapters(:phlm, 1)
+    it_gets_number_of_chapters(:heb, 13)
+    it_gets_number_of_chapters(:jas, 5)
+    it_gets_number_of_chapters('1pet'.to_sym, 5)
+    it_gets_number_of_chapters('2pet'.to_sym, 3)
+    it_gets_number_of_chapters('1john'.to_sym, 5)
+    it_gets_number_of_chapters('2john'.to_sym, 1)
+    it_gets_number_of_chapters('3john'.to_sym, 1)
+    it_gets_number_of_chapters(:jude, 1)
+    it_gets_number_of_chapters(:rev, 22)
+
+  end
+
+  context "number_of_verses" do
+
+    it "returns 31 for Genesis 1" do
+      expect(store.number_of_verses(:gen, 1)).to eq(31)
+    end
+
+    it "returns 25 for Genesis 2" do
+      expect(store.number_of_verses(:gen, 2)).to eq(25)
+    end
+
+  end
+
 end
