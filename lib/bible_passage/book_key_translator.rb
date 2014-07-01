@@ -333,7 +333,7 @@ module BiblePassage
 
     def keyify(book_name)
       TRANSLATIONS[normalize_input(book_name)] ||
-        raise(InvalidBookError.new("#{book_name} is not a valid book"))
+        raise(InvalidReferenceError.new("#{book_name} is not a valid book"))
     end
 
     private

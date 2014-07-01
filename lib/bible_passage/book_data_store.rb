@@ -274,7 +274,7 @@ module BiblePassage
       if book
         book[:name]
       else
-        raise(InvalidBookError.new("#{key} is not a valid book key"))
+        raise(InvalidReferenceError.new("#{key} is not a valid book key"))
       end
     end
 

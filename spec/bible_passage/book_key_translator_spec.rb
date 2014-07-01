@@ -345,11 +345,11 @@ describe BiblePassage::BookKeyTranslator do
 
   it "errors if description is not found" do
     expect { translator.keyify("nonsense") }.to raise_error(
-      BiblePassage::InvalidBookError, "nonsense is not a valid book")
+      BiblePassage::InvalidReferenceError, "nonsense is not a valid book")
   end
 
   it "errors if spaces are inserted in words" do
     expect { translator.keyify("jo hn") }.to raise_error(
-      BiblePassage::InvalidBookError, "jo hn is not a valid book")
+      BiblePassage::InvalidReferenceError, "jo hn is not a valid book")
   end
 end

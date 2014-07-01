@@ -81,7 +81,7 @@ describe BiblePassage::BookDataStore do
 
     it "errors if key is not found" do
       expect { store.book_name(:ex) }.to raise_error(
-        BiblePassage::InvalidBookError, "ex is not a valid book key")
+        BiblePassage::InvalidReferenceError, "ex is not a valid book key")
     end
 
   end

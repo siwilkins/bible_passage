@@ -33,12 +33,12 @@ module BiblePassage
 
     end
 
-    attr_reader :book_key
+    attr_reader :book_key, :book
 
-    def initialize(book_key, from_chapter, from_verse, to_chapter, to_verse,
-                   options = {})
+    def initialize(book_key, from_chapter = nil, from_verse = nil, 
+                   to_chapter = nil, to_verse = nil, options = {})
       @data_store = options[:data_store] || BookDataStore.new
-      @book_key = book_key
+      self.book_key = book_key
       @from_chapter = int_param(from_chapter)
       @from_verse = int_param(from_verse)
       @to_chapter = set_to_chapter(to_chapter)
@@ -47,8 +47,9 @@ module BiblePassage
           @data_store.number_of_verses(book_key, self.to_chapter))
     end
 
-    def book
-      @data_store.book_name(book_key)
+    def book_key=(key)
+      @book = @data_store.book_name(key)
+      @book_key = key
     end
 
     def from_chapter

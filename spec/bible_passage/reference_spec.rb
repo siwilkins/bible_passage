@@ -22,7 +22,7 @@ describe BiblePassage::Reference do
 
     let(:data_store) do
       instance_double(BiblePassage::BookDataStore, number_of_verses: 50,
-                      number_of_chapters: 15)
+                      number_of_chapters: 15, book_name: 'Matthew')
     end
 
     let(:reference) do
@@ -196,6 +196,15 @@ describe BiblePassage::Reference do
     it_renders_passage(:jude, nil, nil, nil, nil, 'Jude', 'where a whole single chapter book')
 
     it_renders_passage(:exod, nil, nil, nil, nil, 'Exodus', 'where a whole book')
+
+  end
+
+  context "error checking" do
+
+    it "errors when given a non-existent book reference" do
+      expect{ BiblePassage::Reference.new(:gon) }.to raise_error(
+        BiblePassage::InvalidReferenceError, "gon is not a valid book key")
+    end
 
   end
 
