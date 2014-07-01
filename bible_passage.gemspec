@@ -1,17 +1,17 @@
 Gem::Specification.new do |s|
-  s.name        = 'bible-passage'
+  s.name        = 'bible_passage'
   s.summary     = 'A simple library for parsing and rendering bible passages'
   s.version     = '0.0.1'
   s.authors     = ["Si Wilkins"]
   s.email       = 'si.wilkins@gmail.com'
-  s.homepage    = 'https://github.com/siwilkins/bible-passage'
+  s.homepage    = 'https://github.com/siwilkins/bible_passage'
   readmes       = Dir['*'].reject{ |x| x = ~ /(^|[^.a-z])[a-z]+/ || x == "TODO" || x =~ /\.gem$/ }
   s.files       = Dir['lib/**/*', 'spec/**/*'] + readmes
   s.has_rdoc    = false
   s.test_files  = Dir["test/**/*_test.rb"]
   s.license     = "MIT"
   s.description = <<-END
-bible-passage provides a facility for parsing a string to check its validity
+bible_passage provides a facility for parsing a string to check its validity
 as a Bible reference, and then render it in a consistent manner.
 END
   s.add_development_dependency 'rspec', '~> 3.0'
