@@ -87,7 +87,7 @@ describe BiblePassage::Reference do
 
       it_has_to_chapter("Exodus 2:13-4:1", 4, 'works with specified start and end verse')
 
-      it_has_to_chapter("Exodus 2:3-40", 2, 'works when from_verse is specified')
+      it_has_to_chapter("Exodus 2:3-20", 2, 'works when from_verse is specified')
 
       it_has_to_chapter("Exodus 2:13-14:5", 14, 'works when from_verse is specified')
 
@@ -201,9 +201,55 @@ describe BiblePassage::Reference do
 
   context "error checking" do
 
-    it "errors when given a non-existent book reference" do
-      expect{ BiblePassage::Reference.new(:gon) }.to raise_error(
-        BiblePassage::InvalidReferenceError, "gon is not a valid book key")
+    context "parse" do
+
+      it "errors when given a non-existent book name" do
+        expect { BiblePassage::Reference.parse("Genosis") }.to raise_error(
+          BiblePassage::InvalidReferenceError, "Genosis is not a valid book")
+      end
+
+    end
+
+    context "new" do
+
+      def self.it_errors(msg, book_key, from_chapter, from_verse, to_chapter,
+                         to_verse, error_msg)
+        it msg do
+          expect { BiblePassage::Reference.new(book_key, from_chapter, 
+            from_verse, to_chapter, to_verse) }.
+            to raise_error(BiblePassage::InvalidReferenceError, error_msg)
+        end
+      end
+
+      it_errors "when from_chapter is less than 1", :gen, 0, nil, nil, nil,
+                "Genesis doesn't have a chapter 0"
+
+      it_errors "when from_chapter is greater than number of chapters in book",
+        :gen, 51, nil, nil, nil, "Genesis doesn't have a chapter 51"
+
+      it_errors "when from_verse is less than 1", :gen, 1, 0, nil, nil,
+        "Genesis 1 doesn't have a verse 0"
+
+      it_errors "when from_verse is greater than number of verses in chapter",
+        :gen, 1, 32, nil, nil, "Genesis 1 doesn't have a verse 32"
+
+      it_errors "when to_chapter is less than from_chapter", :gen, 2, nil, 1,
+        nil, "to_chapter cannot be before from_chapter"
+
+      it_errors "when to_chapter is greater than number of chapters is book",
+        :gen, 2, nil, 51, nil, "Genesis doesn't have a chapter 51"
+
+      it_errors "when to_verse is less than from_verse and in same chapter",
+        :gen, 2, 2, 2, 1, "to_verse cannot be before from_verse"
+
+      it "doesn't error when to_verse is less than from_verse but spans 
+        chapters" do
+        expect { BiblePassage::Reference.new(:gen, 2, 2, 3, 1) }.
+          not_to raise_error
+      end
+
+      it_errors "when to_verse is greater than number of verses in chapter",
+        :gen, 1, 1, 1, 32, "Genesis 1 doesn't have a verse 32"
     end
 
   end

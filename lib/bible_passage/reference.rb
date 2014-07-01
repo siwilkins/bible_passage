@@ -39,12 +39,10 @@ module BiblePassage
                    to_chapter = nil, to_verse = nil, options = {})
       @data_store = options[:data_store] || BookDataStore.new
       self.book_key = book_key
-      @from_chapter = int_param(from_chapter)
-      @from_verse = int_param(from_verse)
-      @to_chapter = set_to_chapter(to_chapter)
-      @to_verse = int_param(to_verse) || 
-        (from_verse ? from_verse.to_i :
-          @data_store.number_of_verses(book_key, self.to_chapter))
+      self.from_chapter = int_param(from_chapter)
+      self.from_verse = int_param(from_verse)
+      self.to_chapter = calculate_to_chapter(to_chapter)
+      self.to_verse = calculate_to_verse(to_verse)
     end
 
     def book_key=(key)
@@ -56,16 +54,57 @@ module BiblePassage
       @from_chapter || 1
     end
 
+    def from_chapter=(val)
+      if val
+        raise InvalidReferenceError.new(
+          "#{book} doesn't have a chapter #{val}") if val < 1 || 
+          val > @data_store.number_of_chapters(book_key)
+        @from_chapter = val
+      end
+    end
+
     def from_verse
       @from_verse || 1
+    end
+
+    def from_verse=(val)
+      if val
+        raise InvalidReferenceError.new(
+          "#{book} #{from_chapter} doesn't have a verse #{val}") if val < 1 ||
+          val > @data_store.number_of_verses(book_key, from_chapter)
+        @from_verse = val
+      end
     end
 
     def to_chapter
       @to_chapter || from_chapter
     end
 
+    def to_chapter=(val)
+      if val
+        raise InvalidReferenceError.new(
+          "to_chapter cannot be before from_chapter") if val < from_chapter
+        raise InvalidReferenceError.new(
+          "#{book} doesn't have a chapter #{val}") if val > 
+          @data_store.number_of_chapters(book_key)
+        @to_chapter = val
+      end
+    end
+
     def to_verse
       @to_verse || from_verse
+    end
+
+    def to_verse=(val)
+      if val
+        raise InvalidReferenceError.new(
+          "to_verse cannot be before from_verse") if val < from_verse && 
+          single_chapter_passage?
+        raise InvalidReferenceError.new(
+          "#{book} #{to_chapter} doesn't have a verse #{val}") if val > 
+          @data_store.number_of_verses(book_key, to_chapter)
+        @to_verse = val
+      end
     end
 
     def to_s
@@ -163,14 +202,20 @@ module BiblePassage
       to_verse == @data_store.number_of_verses(book_key, to_chapter)
     end
 
-    def set_to_chapter(supplied_to_chapter)
-      @to_chapter = int_param(supplied_to_chapter) || begin
+    def calculate_to_chapter(supplied_to_chapter)
+      int_param(supplied_to_chapter) || begin
         if @from_chapter
           @from_chapter
         else
           @data_store.number_of_chapters(book_key)
         end
       end
+    end
+
+    def calculate_to_verse(supplied_to_verse)
+      int_param(supplied_to_verse) || 
+        @from_verse ||
+          @data_store.number_of_verses(book_key, self.to_chapter)
     end
 
   end
