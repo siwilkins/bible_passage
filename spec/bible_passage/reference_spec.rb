@@ -67,6 +67,7 @@ describe BiblePassage::Reference do
 
       it_has_from_chapter('Luke12:3', 12, 'works when no space used')
 
+      it_has_from_chapter('Jude 2', 1, 'works for single chapter book')
     end
 
     context "from_verse" do
@@ -74,6 +75,8 @@ describe BiblePassage::Reference do
       it_has_from_verse("Genesis", 1, 'defaults to 1')
 
       it_has_from_verse("Exodus 1:2", 2, 'works when specified')
+
+      it_has_from_verse('Jude 2', 2, 'works for single chapter book')
 
     end
 
@@ -91,6 +94,8 @@ describe BiblePassage::Reference do
 
       it_has_to_chapter("Exodus 2:13-14:5", 14, 'works when from_verse is specified')
 
+      it_has_to_chapter("Jude 2-3", 1, 'works for a single chapter book')
+
     end
 
     context "to_verse" do
@@ -102,6 +107,8 @@ describe BiblePassage::Reference do
       it_has_to_verse("Exodus 2:12", 12, 'defaults to from_verse if from_chapter is specified')
 
       it_has_to_verse("Exodus 2-3", 22, 'defaults to last verse of to_chapter if to_chapter is specified')
+
+      it_has_to_verse('Jude 2-3', 3, 'works for a single chapter book')
 
     end
 
@@ -250,6 +257,14 @@ describe BiblePassage::Reference do
 
       it_errors "when to_verse is greater than number of verses in chapter",
         :gen, 1, 1, 1, 32, "Genesis 1 doesn't have a verse 32"
+
+      it "errors when a chapter is supplied to .parse for a single-chapter
+        book" do
+        expect { BiblePassage::Reference.parse("Jude 2:3-4") }.to raise_error(
+          BiblePassage::InvalidReferenceError, 
+          "Jude doesn't have any chapters")
+      end
+
     end
 
   end

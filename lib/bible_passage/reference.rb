@@ -5,30 +5,50 @@ module BiblePassage
     class << self
 
       def parse(passage, options = {})
-        @translator = options.delete(:translator) || BookKeyTranslator.new
+        translator = options.delete(:translator) || BookKeyTranslator.new
+        data_store = options[:data_store] ||= BookDataStore.new
         match = passage.match(/^\s*(\d?\s*[A-Za-z\s]+)\s*(\d+)?:?(\d+)?-?(\d+)?:?(\d+)?/)
-        if $2
-          from_chapter = $2.to_i 
-          # has from verse
-          if $3
-            from_verse = $3.to_i
-            if $5
-              to_chapter = $4.to_i
-              to_verse = $5.to_i
-            else
-              to_verse = $4
-            end
-          else
-            from_verse = $3 
-            to_chapter = $4 
-          end
+        book_key = translator.keyify(match[1])
+        if data_store.number_of_chapters(book_key) == 1
+          process_single_chapter_match(book_key, match, options)
+        else
+          process_multi_chapter_match(book_key, match, options)
         end
-        new(book_key(match), from_chapter, from_verse, to_chapter, to_verse, options)
       end
 
+
       private
-      def book_key(match)
-        @translator.keyify(match[1])
+      def process_multi_chapter_match(book_key, match, options)
+        if match[2]
+          from_chapter = match[2].to_i 
+          # has from verse
+          if match[3]
+            from_verse = match[3].to_i
+            if match[5]
+              to_chapter = match[4].to_i
+              to_verse = match[5].to_i
+            else
+              to_verse = match[4].to_i if match[4]
+            end
+          else
+            from_verse = match[3].to_i if match[3]
+            to_chapter = match[4].to_i if match[4]
+          end
+        end
+        new(book_key, from_chapter, from_verse, to_chapter, to_verse, options)
+      end
+
+      def process_single_chapter_match(book_key, match, options)
+        if match[2]
+          from_verse = match[2].to_i
+          to_verse = match[4].to_i if match[4]
+        end
+        if match[0] =~ /:/
+          book_name = options[:data_store].book_name(book_key)
+          msg = "#{book_name} doesn't have any chapters"
+          raise InvalidReferenceError.new(msg)
+        end
+        new(book_key, nil, from_verse, nil, to_verse, options)
       end
 
     end
