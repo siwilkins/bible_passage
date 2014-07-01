@@ -165,14 +165,24 @@ describe BiblePassage::BookDataStore do
 
   context "number_of_verses" do
 
-    it "returns 31 for Genesis 1" do
-      expect(store.number_of_verses(:gen, 1)).to eq(31)
+    def self.it_gets_number_of_verses(book_key, chapter, n)
+      it "returns #{n} for :#{book_key} #{chapter}" do
+        expect(store.number_of_verses(book_key, chapter)).to eq(n)
+      end
     end
 
+    it_gets_number_of_verses(:gen, 1, 31)
+    it_gets_number_of_verses(:gen, 2, 25)
     it "returns 25 for Genesis 2" do
       expect(store.number_of_verses(:gen, 2)).to eq(25)
     end
 
+    # The following are regression tests for particular chapters which have
+    # known errors in earlier versions
+
+    # Use non-Hebrew numbering of Nehemiah 9/10
+    it_gets_number_of_verses(:neh, 9, 38)
+    it_gets_number_of_verses(:neh, 10, 39)
   end
 
 end

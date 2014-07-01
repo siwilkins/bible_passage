@@ -65,7 +65,7 @@ module BiblePassage
       },
       neh: {
         name: 'Nehemiah',
-        chapters: [11, 20, 38, 17, 19, 19, 72, 18, 37, 40, 36, 47, 31]
+        chapters: [11, 20, 38, 17, 19, 19, 72, 18, 38, 39, 36, 47, 31]
       },
       esth: {
         name: 'Esther',
