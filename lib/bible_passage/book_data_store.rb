@@ -65,7 +65,7 @@ module BiblePassage
       },
       neh: {
         name: 'Nehemiah',
-        chapters: [11, 20, 38, 17, 19, 19, 72, 18, 38, 39, 36, 47, 31]
+        chapters: [11, 20, 32, 23, 19, 19, 73, 18, 38, 39, 36, 47, 31]
       },
       esth: {
         name: 'Esther',
@@ -85,7 +85,7 @@ module BiblePassage
       },
       eccl: {
         name: 'Ecclesiastes',
-        chapters: [18, 26, 22, 17, 19, 12, 29, 17, 18, 20, 10, 14]
+        chapters: [18, 26, 22, 16, 20, 12, 29, 17, 18, 20, 10, 14]
       },
       song: {
         name: 'Song of Songs',

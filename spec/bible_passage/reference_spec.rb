@@ -9,6 +9,13 @@ describe BiblePassage::Reference do
       it msg do
         expect(BiblePassage::Reference.parse(ref_str).send($1)).to eq(val)
       end
+    elsif mth.to_s =~ /^child_has_(\w+)$/
+      ref_str, val, msg = args
+      msg << " (#{ref_str})"
+      it msg do
+        expect(BiblePassage::Reference.parse(ref_str).child.send($1)).
+          to eq(val)
+      end
     else
       super
     end
@@ -68,6 +75,9 @@ describe BiblePassage::Reference do
       it_has_from_chapter('Luke12:3', 12, 'works when no space used')
 
       it_has_from_chapter('Jude 2', 1, 'works for single chapter book')
+
+      it_has_from_chapter('Revelation 8:6 - 11:19', 8, 'works with spaces around hyphen')
+
     end
 
     context "from_verse" do
@@ -109,6 +119,67 @@ describe BiblePassage::Reference do
       it_has_to_verse("Exodus 2-3", 22, 'defaults to last verse of to_chapter if to_chapter is specified')
 
       it_has_to_verse('Jude 2-3', 3, 'works for a single chapter book')
+
+    end
+
+    context "compound" do
+
+      context "full passage reference child" do
+
+        let(:ref) { BiblePassage::Reference }
+
+        it "behaves like a normal reference" do
+          expect(ref.parse("gen 1:2-3, ex 4:5-6:7").child).to eq(ref.parse("ex 4:5-6:7"))
+        end
+
+      end
+
+      context "from_chapter" do
+
+        child_has_from_chapter("Exodus 1:2-3:4,5", 3, "defaults to parent's to_chapter if supplied")
+
+        child_has_from_chapter("Exodus 1:2-3:4,5:6", 5, "uses supplied if chapter and verse given")
+
+        child_has_from_chapter("Exodus 1, 3", 3, 'uses supplied if chapter given')
+
+        child_has_from_chapter("Jude 1, 2", 1, 'sets to 1 if single-chapter book')
+
+      end
+
+      context "from_verse" do
+
+        child_has_from_verse("Exodus 1:2-3:4, 5", 5, "uses supplied from_verse")
+
+        child_has_from_verse("Exodus 1:2-3:4, 5:6", 6, "uses supplied if chapter and verse given")
+
+        child_has_from_verse("Exodus 1, 2:3", 3, "uses supplied if parent doesn't have one")
+
+        child_has_from_verse("Jude 1, 2", 2, "uses supplied for single-chapter book")
+
+      end
+
+      context "to_chapter" do
+
+        child_has_to_chapter("Exodus 1, 3-4", 4, "uses supplied if given")
+
+        child_has_to_chapter("Exodus 1, 3:4-5", 3, "doesn't use if not supplied")
+
+        child_has_to_chapter("Exodus 1, 3:4-5:6", 5, "uses if to_verse also supplied")
+
+        child_has_to_chapter("ex 1:2-3:4, 5:6-7:8 ", 7, "uses if all supplied")
+      end
+
+      context "to_verse" do
+
+        child_has_to_verse("Exodus 1, 2-3:4", 4, "uses supplied if chapter and verse given")
+
+        child_has_to_verse("Exodus 1, 2:3-4", 4, "uses supplied if just verse given")
+
+        child_has_to_verse("Exodus 1, 2:3", 3, "doesn't use if to-part not supplied")
+
+        child_has_to_verse("Exodus 1, 2-3", 22, "uses end verse if just to_chapter supplied")
+
+      end
 
     end
 
@@ -178,7 +249,7 @@ describe BiblePassage::Reference do
 
   context "to_s" do
 
-    def self.it_renders_passage(book_key, from_chapter, from_verse, to_chapter,
+    def self.it_renders_reference(book_key, from_chapter, from_verse, to_chapter,
                                 to_verse, passage, msg)
       it "renders #{msg}" do
         expect(BiblePassage::Reference.new(book_key, from_chapter, from_verse,
@@ -186,23 +257,37 @@ describe BiblePassage::Reference do
       end
     end
 
-    it_renders_passage(:gen, 1, 2, 3, 4, 'Genesis 1:2-3:4', 'where all attributes differ')
+    def self.it_renders_passage(passage, expected)
+      it "renders #{passage} as #{expected}" do
+        expect(BiblePassage::Reference.parse(passage).to_s).to eq expected
+      end
+    end
 
-    it_renders_passage(:gen, 1, 2, 1, 3, 'Genesis 1:2-3', 'where only verses differ')
+    it_renders_reference(:gen, 1, 2, 3, 4, 'Genesis 1:2-3:4', 'where all attributes differ')
 
-    it_renders_passage(:gen, 1, nil, 2, nil, 'Genesis 1-2', 'where full chapters')
+    it_renders_reference(:gen, 1, 2, 1, 3, 'Genesis 1:2-3', 'where only verses differ')
 
-    it_renders_passage(:gen, 1, nil, nil, nil, 'Genesis 1', 'where single chapter')
+    it_renders_reference(:gen, 1, nil, 2, nil, 'Genesis 1-2', 'where full chapters')
 
-    it_renders_passage(:gen, 1, 2, nil, nil, 'Genesis 1:2', 'where single verse')
+    it_renders_reference(:gen, 1, nil, nil, nil, 'Genesis 1', 'where single chapter')
 
-    it_renders_passage(:jude, 1, 2, 1, 4, 'Jude 2-4', 'where a single chapter book')
+    it_renders_reference(:gen, 1, 2, nil, nil, 'Genesis 1:2', 'where single verse')
 
-    it_renders_passage(:jude, 1, 2, 1, 2, 'Jude 2', 'where a single verse in a single chapter book')
+    it_renders_reference(:jude, 1, 2, 1, 4, 'Jude 2-4', 'where a single chapter book')
 
-    it_renders_passage(:jude, nil, nil, nil, nil, 'Jude', 'where a whole single chapter book')
+    it_renders_reference(:jude, 1, 2, 1, 2, 'Jude 2', 'where a single verse in a single chapter book')
 
-    it_renders_passage(:exod, nil, nil, nil, nil, 'Exodus', 'where a whole book')
+    it_renders_reference(:jude, nil, nil, nil, nil, 'Jude', 'where a whole single chapter book')
+
+    it_renders_reference(:exod, nil, nil, nil, nil, 'Exodus', 'where a whole book')
+
+    it_renders_passage("gn 1:2-3:4, ex 5:6-7:8", "Genesis 1:2-3:4, Exodus 5:6-7:8")
+
+    it_renders_passage("ex 1:2-3:4, 5:6-7:8", 'Exodus 1:2-3:4, 5:6-7:8')
+
+    it_renders_passage("ex 1-2, 3-4", "Exodus 1-2, 3-4")
+
+    it_renders_passage("Ephesians 4:20-32, 5:18-19", "Ephesians 4:20-32, 5:18-19")
 
   end
 
@@ -265,8 +350,31 @@ describe BiblePassage::Reference do
           "Jude doesn't have any chapters")
       end
 
+      it "errors when no book is supplied to parse" do
+        expect { BiblePassage::Reference.parse('2') }.to raise_error(
+          BiblePassage::InvalidReferenceError, "2 is not a valid reference")
+      end
+
     end
 
   end
 
+  context "inheritable attributes" do
+
+    let(:ref) { BiblePassage::Reference }
+
+    it "is empty if just book supplied" do
+      expect(ref.new(:gen).inheritable_attributes).to eq({})
+    end
+
+    it "returns book_key if chapters specified" do
+      expect(ref.new(:gen, 1).inheritable_attributes).to eq(book_key: :gen)
+    end
+
+    it "returns to_chapter as from_chapter if verses specified" do
+      expect(ref.new(:gen, 1, 2, 3, 4).inheritable_attributes).
+        to eq(book_key: :gen, from_chapter: 3)
+    end
+
+  end
 end

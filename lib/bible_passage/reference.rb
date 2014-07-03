@@ -4,20 +4,73 @@ module BiblePassage
 
     class << self
 
+      # Parsing methods are currently very complex and long.
+      # Could need some work
+      
+      ##
+      # The main method used for parsing passage strings
       def parse(passage, options = {})
         translator = options.delete(:translator) || BookKeyTranslator.new
         data_store = options[:data_store] ||= BookDataStore.new
-        match = passage.match(/^\s*(\d?\s*[A-Za-z\s]+)\s*(\d+)?:?(\d+)?-?(\d+)?:?(\d+)?/)
+        match = match_passage_format(passage)
+        raise InvalidReferenceError.new("#{passage} is not a valid reference") if !match
         book_key = translator.keyify(match[1])
         if data_store.number_of_chapters(book_key) == 1
-          process_single_chapter_match(book_key, match, options)
+          ref = process_single_chapter_match(book_key, match, options)
         else
-          process_multi_chapter_match(book_key, match, options)
+          ref = process_multi_chapter_match(book_key, match, options)
         end
+        ref.parse_child(match[6].gsub(/^,\s*/, '')) if match[6]
+        ref
       end
 
+      ##
+      # Parses a child reference in a compound passage string
+      def parse_child(passage, parent, options = {})
+        if match_passage_format(passage)
+          ref = parse(passage, options)
+        else
+          match = passage.match(/\s*(\d+)?:?(\d+)?\s*(-?)\s*(\d+)?:?(\d+)?\s*(,.+)?$/)
+          book_key = parent.book_key
+          attrs = parent.inheritable_attributes
+          if attrs[:from_chapter]
+            if match[2]
+              attrs[:from_chapter] = match[1].to_i 
+              attrs[:from_verse] = match[2].to_i
+            else
+              attrs[:from_verse] = match[1].to_i
+            end
+          else
+            attrs[:from_chapter] = match[1].to_i
+            if match[2]
+              attrs[:from_verse] = match[2].to_i
+            else
+            end
+          end
+          if match[5]
+            attrs[:to_chapter] = int_param(match[4])
+            attrs[:to_verse] = int_param(match[5])
+          elsif attrs[:from_verse]
+            attrs[:to_verse] = int_param(match[4]) 
+          else
+            attrs[:to_chapter] = int_param(match[4])
+          end
+          ref = new(book_key, attrs[:from_chapter], attrs[:from_verse], 
+              attrs[:to_chapter], attrs[:to_verse])
+        end
+        ref.parent = parent
+        ref
+      end
 
       private
+      def match_passage_format(passage)
+        passage.match(/^\s*(\d?\s*[A-Za-z\s]+)\s*(\d+)?:?(\d+)?\s*-?\s*(\d+)?:?(\d+)?\s*(,.+)?/)
+      end
+
+      def int_param(param)
+        param ? param.to_i : nil
+      end
+
       def process_multi_chapter_match(book_key, match, options)
         if match[2]
           from_chapter = match[2].to_i 
@@ -28,11 +81,11 @@ module BiblePassage
               to_chapter = match[4].to_i
               to_verse = match[5].to_i
             else
-              to_verse = match[4].to_i if match[4]
+              to_verse = int_param(match[4])
             end
           else
-            from_verse = match[3].to_i if match[3]
-            to_chapter = match[4].to_i if match[4]
+            from_verse = int_param(match[3])
+            to_chapter = int_param(match[4])
           end
         end
         new(book_key, from_chapter, from_verse, to_chapter, to_verse, options)
@@ -53,7 +106,9 @@ module BiblePassage
 
     end
 
-    attr_reader :book_key, :book
+    attr_reader :book_key, :book, :child
+
+    attr_writer :parent
 
     def initialize(book_key, from_chapter = nil, from_verse = nil, 
                    to_chapter = nil, to_verse = nil, options = {})
@@ -63,6 +118,10 @@ module BiblePassage
       self.from_verse = int_param(from_verse)
       self.to_chapter = calculate_to_chapter(to_chapter)
       self.to_verse = calculate_to_verse(to_verse)
+    end
+
+    def parse_child(child_passage)
+      @child = self.class::parse_child(child_passage, self)
     end
 
     def book_key=(key)
@@ -79,6 +138,7 @@ module BiblePassage
         raise InvalidReferenceError.new(
           "#{book} doesn't have a chapter #{val}") if val < 1 || 
           val > @data_store.number_of_chapters(book_key)
+        @inherit_book_key = true
         @from_chapter = val
       end
     end
@@ -92,6 +152,7 @@ module BiblePassage
         raise InvalidReferenceError.new(
           "#{book} #{from_chapter} doesn't have a verse #{val}") if val < 1 ||
           val > @data_store.number_of_verses(book_key, from_chapter)
+        @inherit_chapter = true
         @from_verse = val
       end
     end
@@ -128,11 +189,13 @@ module BiblePassage
     end
 
     def to_s
-      if single_chapter_book?
-        "#{book}#{from_verse_part}#{to_verse_part}"
+      if @parent
+        out = to_s_child
       else
-        "#{book}#{from_part}#{to_part}"
+        out = to_s_root
       end
+      out << child.to_s if child
+      out
     end
 
     def whole_chapters?
@@ -147,6 +210,24 @@ module BiblePassage
 
     def whole_chapter?
       whole_chapters? && from_chapter == to_chapter
+    end
+
+    def attributes
+      %w{book_key from_chapter from_verse to_chapter to_verse}.
+        inject({}) do |memo, attr_key|
+          memo.merge(attr_key.to_sym => send(attr_key))
+      end
+    end
+    
+    def ==(other)
+      attributes == other.attributes
+    end
+
+    def inheritable_attributes
+      out = {}
+      out[:book_key] = book_key if @inherit_book_key
+      out[:from_chapter] = to_chapter if @inherit_chapter
+      out
     end
 
     private
@@ -201,7 +282,6 @@ module BiblePassage
       end
     end
 
-
     def int_param(param)
       param ? param.to_i : nil
     end
@@ -236,6 +316,23 @@ module BiblePassage
       int_param(supplied_to_verse) || 
         @from_verse ||
           @data_store.number_of_verses(book_key, self.to_chapter)
+    end
+
+    def to_s_root
+      if single_chapter_book?
+        out = "#{book}#{from_verse_part}#{to_verse_part}"
+      else
+        out = "#{book}#{from_part}#{to_part}"
+      end
+    end
+
+    def to_s_child
+      out = ','
+      if book_key != @parent.book_key
+        out << " #{to_s_root}"
+      else
+        out << "#{from_part}#{to_part}"
+      end
     end
 
   end

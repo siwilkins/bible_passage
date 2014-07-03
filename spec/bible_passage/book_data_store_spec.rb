@@ -183,6 +183,14 @@ describe BiblePassage::BookDataStore do
     # Use non-Hebrew numbering of Nehemiah 9/10
     it_gets_number_of_verses(:neh, 9, 38)
     it_gets_number_of_verses(:neh, 10, 39)
+
+    it_gets_number_of_verses(:neh, 7, 73)
+    it_gets_number_of_verses(:neh, 4, 23)
+    it_gets_number_of_verses(:neh, 3, 32)
+
+    it_gets_number_of_verses(:eccl, 5, 20)
+    it_gets_number_of_verses(:eccl, 4, 16)
+
   end
 
 end
