@@ -406,6 +406,9 @@ describe BiblePassage::Reference do
         expect(BiblePassage::Reference.new(:gen, 1, 1).valid?).to eq(true)
       end
 
+      it "returns nil for to_s when it is invalid" do
+        expect(BiblePassage::Reference.parse('2', raise_errors: false).to_s).to eq(nil)
+      end
     end
 
   end

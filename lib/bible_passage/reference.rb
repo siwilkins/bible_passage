@@ -212,6 +212,7 @@ module BiblePassage
     end
 
     def to_s
+      return nil if !valid?
       if @parent
         out = to_s_child
       else
