@@ -40,13 +40,13 @@ describe BiblePassage::Reference do
     context "book_key" do
 
       it "returns a book_key" do
-        allow(translator).to receive(:keyify).with("book name").
+        allow(translator).to receive(:keyify).with("book name", true).
           and_return :gen
         expect(reference.book_key).to eq(:gen)
       end
 
       it "returns another book_key" do
-        allow(translator).to receive(:keyify).with("book name").
+        allow(translator).to receive(:keyify).with("book name", true).
           and_return :ex
         expect(reference.book_key).to eq(:ex)
       end
@@ -300,38 +300,74 @@ describe BiblePassage::Reference do
           BiblePassage::InvalidReferenceError, "Genosis is not a valid book")
       end
 
+      it "returns an invalid reference when non-existent book and false are passed in for raise_errors" do
+        expect(BiblePassage::Reference.parse("Genosis", raise_errors: false).valid?).to eq(false)
+      end
+
+      it "returns valid? false when non-existent book and raise_errors:false are passed in" do
+        expect(BiblePassage::Reference.parse("Genosis", raise_errors: false).valid?).to eq(false)
+      end
+
     end
 
     context "new" do
 
       def self.it_errors(msg, book_key, from_chapter, from_verse, to_chapter,
                          to_verse, error_msg)
-        it msg do
+        it "errors #{msg}" do
           expect { BiblePassage::Reference.new(book_key, from_chapter, 
             from_verse, to_chapter, to_verse) }.
             to raise_error(BiblePassage::InvalidReferenceError, error_msg)
         end
       end
 
+      def self.it_returns_invalid_reference(msg, book_key, from_chapter, from_verse, to_chapter, to_verse, error_msg)
+        it "returns an invalid reference #{msg}" do
+          ref = BiblePassage::Reference.new(book_key, from_chapter, from_verse, to_chapter, to_verse, raise_errors: false)
+          expect(ref.valid?).to eq(false)
+          expect(ref.error).to eq(error_msg)
+        end
+      end
+
       it_errors "when from_chapter is less than 1", :gen, 0, nil, nil, nil,
                 "Genesis doesn't have a chapter 0"
+      
+      it_returns_invalid_reference "when from_chapter is less than 1", :gen, 0, 1, 1, 1, "Genesis doesn't have a chapter 0"
 
       it_errors "when from_chapter is greater than number of chapters in book",
         :gen, 51, nil, nil, nil, "Genesis doesn't have a chapter 51"
 
+      it_returns_invalid_reference  "when from_chapter is greater than number of chapters in book",
+        :gen, 51, 1, 51, 1, "Genesis doesn't have a chapter 51"
+
       it_errors "when from_verse is less than 1", :gen, 1, 0, nil, nil,
+        "Genesis 1 doesn't have a verse 0"
+
+      it_returns_invalid_reference "when from_verse is less than 1", :gen, 1, 0, 1, 1,
         "Genesis 1 doesn't have a verse 0"
 
       it_errors "when from_verse is greater than number of verses in chapter",
         :gen, 1, 32, nil, nil, "Genesis 1 doesn't have a verse 32"
 
+      it_returns_invalid_reference "when from_verse is greater than number of verses in chapter",
+        :gen, 1, 32, 1, 32, "Genesis 1 doesn't have a verse 32"
+
       it_errors "when to_chapter is less than from_chapter", :gen, 2, nil, 1,
         nil, "to_chapter cannot be before from_chapter"
+
+      it_returns_invalid_reference "when to_chapter is less than from_chapter", :gen, 2, 1, 1,
+        1, "to_chapter cannot be before from_chapter"
 
       it_errors "when to_chapter is greater than number of chapters is book",
         :gen, 2, nil, 51, nil, "Genesis doesn't have a chapter 51"
 
+      it_returns_invalid_reference "when to_chapter is greater than number of chapters is book",
+        :gen, 2, 1, 51, 1, "Genesis doesn't have a chapter 51"
+
       it_errors "when to_verse is less than from_verse and in same chapter",
+        :gen, 2, 2, 2, 1, "to_verse cannot be before from_verse"
+
+      it_returns_invalid_reference "when to_verse is less than from_verse and in same chapter",
         :gen, 2, 2, 2, 1, "to_verse cannot be before from_verse"
 
       it "doesn't error when to_verse is less than from_verse but spans 
@@ -343,6 +379,9 @@ describe BiblePassage::Reference do
       it_errors "when to_verse is greater than number of verses in chapter",
         :gen, 1, 1, 1, 32, "Genesis 1 doesn't have a verse 32"
 
+      it_returns_invalid_reference "when to_verse is greater than number of verses in chapter",
+        :gen, 1, 1, 1, 32, "Genesis 1 doesn't have a verse 32"
+
       it "errors when a chapter is supplied to .parse for a single-chapter
         book" do
         expect { BiblePassage::Reference.parse("Jude 2:3-4") }.to raise_error(
@@ -350,9 +389,21 @@ describe BiblePassage::Reference do
           "Jude doesn't have any chapters")
       end
 
+      it "returns an invalid reference when a chapter and parse_errors: false are supplied to .parse for a single-chapter book" do
+        expect(BiblePassage::Reference.parse("Jude 2:3-4", raise_errors: false).valid?).to eq(false)
+      end
+
       it "errors when no book is supplied to parse" do
         expect { BiblePassage::Reference.parse('2') }.to raise_error(
           BiblePassage::InvalidReferenceError, "2 is not a valid reference")
+      end
+
+      it "returns an invalid reference when no book and raise_errors: false is supplied to parse" do
+        expect(BiblePassage::Reference.parse('2', raise_errors: false).valid?).to eq(false)
+      end
+
+      it "returns true for valid? when it is valid" do
+        expect(BiblePassage::Reference.new(:gen, 1, 1).valid?).to eq(true)
       end
 
     end

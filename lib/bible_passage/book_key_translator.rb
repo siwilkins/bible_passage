@@ -331,9 +331,13 @@ module BiblePassage
       revelation: :rev,
     }
 
-    def keyify(book_name)
-      TRANSLATIONS[normalize_input(book_name)] ||
+    def keyify(book_name, raise_errors = true)
+      translation = TRANSLATIONS[normalize_input(book_name)]
+      if translation
+        return translation
+      elsif raise_errors
         raise(InvalidReferenceError.new("#{book_name} is not a valid book"))
+      end
     end
 
     private
