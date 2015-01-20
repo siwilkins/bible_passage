@@ -129,7 +129,7 @@ module BiblePassage
       },
       jonah: {
         name: 'Jonah',
-        chapters: [16, 11, 10, 11]
+        chapters: [17, 11, 10, 11]
       },
       mic: {
         name: 'Micah',
