@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'bible_passage'
   s.summary     = 'A simple library for parsing and rendering bible passages'
-  s.version     = '0.2.2'
+  s.version     = '0.2.3'
   s.authors     = ["Si Wilkins"]
   s.email       = 'si.wilkins@gmail.com'
   s.homepage    = 'https://github.com/siwilkins/bible_passage'
