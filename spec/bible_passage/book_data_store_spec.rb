@@ -191,6 +191,7 @@ describe BiblePassage::BookDataStore do
     it_gets_number_of_verses(:eccl, 5, 20)
     it_gets_number_of_verses(:eccl, 4, 16)
 
+    it_gets_number_of_verses('2chr'.to_sym, 35, 27)
   end
 
 end
