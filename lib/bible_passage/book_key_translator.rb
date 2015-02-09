@@ -3,336 +3,76 @@ module BiblePassage
   class BookKeyTranslator
 
     TRANSLATIONS = {
-      ge: :gen,
-      gen: :gen,
-      gene: :gen,
-      genes: :gen,
-      genesis: :gen,
-      gn: :gen,
-
-      ex: :exod,
-      exo: :exod,
-      exod: :exod,
-      exodus: :exod,
-
-      le: :lev,
-      lev: :lev,
-      levit: :lev,
-      leviticus: :lev,
-
-      nm: :num,
-      nu: :num,
-      num: :num,
-      numb: :num,
-      numbers: :num,
-
-      de: :deut,
-      de: :deut,
-      deu: :deut,
-      deut: :deut,
-      deuter: :deut,
-      deuteronomy: :deut,
-      dt: :deut,
-
-      jos: :josh,
-      josh: :josh,
-      joshua: :josh,
-
-      jd: :judg,
-      jdg: :judg,
-      judg: :judg,
-      judges: :judg,
-
-      ruth: :ruth,
-
-      '1 sa'.to_sym => '1sam'.to_sym,
-      '1 sam'.to_sym => '1sam'.to_sym,
-      '1 samuel'.to_sym => '1sam'.to_sym,
-
-      '2 sa'.to_sym => '2sam'.to_sym,
-      '2 sam'.to_sym => '2sam'.to_sym,
-      '2 samuel'.to_sym => '2sam'.to_sym,
-
-      '1 kgs'.to_sym => '1kings'.to_sym,
-      '1 ki'.to_sym => '1kings'.to_sym,
-      '1 king'.to_sym => '1kings'.to_sym,
-      '1 kings'.to_sym => '1kings'.to_sym,
-      '1 kngs'.to_sym => '1kings'.to_sym,
-
-      '2 kgs'.to_sym => '2kings'.to_sym,
-      '2 ki'.to_sym => '2kings'.to_sym,
-      '2 king'.to_sym => '2kings'.to_sym,
-      '2 kings'.to_sym => '2kings'.to_sym,
-      '2 kngs'.to_sym => '2kings'.to_sym,
-
-      '1 ch'.to_sym => '1chr'.to_sym,
-      '1 chr'.to_sym => '1chr'.to_sym,
-      '1 chro'.to_sym => '1chr'.to_sym,
-      '1 chron'.to_sym => '1chr'.to_sym,
-      '1 chronicles'.to_sym => '1chr'.to_sym,
-
-      '2 ch'.to_sym => '2chr'.to_sym,
-      '2 chr'.to_sym => '2chr'.to_sym,
-      '2 chro'.to_sym => '2chr'.to_sym,
-      '2 chron'.to_sym => '2chr'.to_sym,
-      '2 chronicles'.to_sym => '2chr'.to_sym,
-
-      ezr: :ezra,
-      ezra: :ezra,
-
-      ne: :neh,
-      neh: :neh,
-      nehem: :neh,
-      nehemiah: :neh,
-
-      es: :esth,
-      est: :esth,
-      esth: :esth,
-      esther: :esth,
-
-      jo: :job,
-      job: :job,
-
-      ps: :ps,
-      psa: :ps,
-      psal: :ps,
-      psalm: :ps,
-      psalms: :ps,
-
-      pr: :prov,
-      pro: :prov,
-      prov: :prov,
-      proverbs: :prov,
-
-      ec: :eccl,
-      ecc: :eccl,
-      eccl: :eccl,
-      eccles: :eccl,
-      ecclesiastes: :eccl,
-
-      so: :song,
-      'song of solomon'.to_sym => :song,
-      'song of songs'.to_sym => :song,
-      'song of sol'.to_sym => :song,
-      ss: :song,
-      ssong: :song,
-
-      is: :isa,
-      isa: :isa,
-      isaiah: :isa,
-
-      je: :jer,
-      jer: :jer,
-      jere: :jer,
-      jerem: :jer,
-      jeremiah: :jer,
-
-      la: :lam,
-      lam: :lam,
-      lamen: :lam,
-      lament: :lam,
-      lamentations: :lam,
-
-      eze: :ezek,
-      ezek: :ezek,
-      ezekiel: :ezek,
-
-      da: :dan,
-      dan: :dan,
-      daniel: :dan,
-
-      ho: :hos,
-      hos: :hos,
-      hosea: :hos,
-
-      joe: :joel,
-      joel: :joel,
-
-      am: :amos,
-      amos: :amos,
-
-      ob: :obad,
-      oba: :obad,
-      obad: :obad,
-      obadiah: :obad,
-
-      jon: :jonah,
-      jona: :jonah,
-      jonah: :jonah,
-
-      mi: :mic,
-      mic: :mic,
-      micah: :mic,
-
-      na: :nah,
-      nah: :nah,
-      nahum: :nah,
-
-      hab: :hab,
-      habak: :hab,
-      habakkuk: :hab,
-
-      zep: :zeph,
-      zeph: :zeph,
-      zephaniah: :zeph,
-
-      hag: :hag,
-      hagg: :hag,
-      haggai: :hag,
-
-      zec: :zech,
-      zech: :zech,
-      zechariah: :zech,
-
-      mal: :mal,
-      malac: :mal,
-      malach: :mal,
-      malachi: :mal,
-
-      mat: :matt,
-      matt: :matt,
-      matth: :matt,
-      matthew: :matt,
-      mt: :matt,
-
-      mar: :mark,
-      mark: :mark,
-      mr: :mark,
-      mrk: :mark,
-
-      lk: :luke,
-      lke: :luke,
-      lu: :luke,
-      luk: :luke,
-      luke: :luke,
-
-      jhn: :john,
-      jn: :john,
-      joh: :john,
-      john: :john,
-
-      ac: :acts,
-      act: :acts,
-      acts: :acts,
-
-      ro: :rom,
-      rom: :rom,
-      roman: :rom,
-      romans: :rom,
-
-      '1 co'.to_sym => '1cor'.to_sym,
-      '1 cor'.to_sym => '1cor'.to_sym,
-      '1 corin'.to_sym => '1cor'.to_sym,
-      '1 corinth'.to_sym => '1cor'.to_sym,
-      '1 corinthians'.to_sym => '1cor'.to_sym,
-
-      '2 co'.to_sym => '2cor'.to_sym,
-      '2 cor'.to_sym => '2cor'.to_sym,
-      '2 corin'.to_sym => '2cor'.to_sym,
-      '2 corinth'.to_sym => '2cor'.to_sym,
-      '2 corinthians'.to_sym => '2cor'.to_sym,
-
-      ga: :gal,
-      gal: :gal,
-      galat: :gal,
-      galatians: :gal,
-
-      ep: :eph,
-      eph: :eph,
-      ephes: :eph,
-      ephesians: :eph,
-
-      ph: :phil,
-      phi: :phil,
-      phil: :phil,
-      phili: :phil,
-      philip: :phil,
-      philipp: :phil,
-      philippians: :phil,
-      php: :phil,
-
-      co: :col,
-      col: :col,
-      colo: :col,
-      colos: :col,
-      coloss: :col,
-      colossians: :col,
-
-      '1 ti'.to_sym => '1tim'.to_sym,
-      '1 tim'.to_sym => '1tim'.to_sym,
-      '1 timothy'.to_sym => '1tim'.to_sym,
-
-      '1 th'.to_sym => '1thess'.to_sym,
-      '1 the'.to_sym => '1thess'.to_sym,
-      '1 thes'.to_sym => '1thess'.to_sym,
-      '1 thess'.to_sym => '1thess'.to_sym,
-      '1 thessalonians'.to_sym => '1thess'.to_sym,
-
-      '2 th'.to_sym => '2thess'.to_sym,
-      '2 the'.to_sym => '2thess'.to_sym,
-      '2 thes'.to_sym => '2thess'.to_sym,
-      '2 thess'.to_sym => '2thess'.to_sym,
-      '2 thessalonians'.to_sym => '2thess'.to_sym,
-
-      '2 ti'.to_sym => '2tim'.to_sym,
-      '2 tim'.to_sym => '2tim'.to_sym,
-      '2 timothy'.to_sym => '2tim'.to_sym,
-
-      tit: :titus,
-      titu: :titus,
-      titus: :titus,
-
-      phile: :phlm,
-      philem: :phlm,
-      philemon: :phlm,
-      phlm: :phlm,
-      phlmn: :phlm,
-      phm: :phlm,
-      phmn: :phlm,
-
-      he: :heb,
-      heb: :heb,
-      hebr: :heb,
-      hebrews: :heb,
-
-      ja: :jas,
-      jam: :jas,
-      james: :jas,
-      jas: :jas,
-
-      '1 pe'.to_sym => '1pet'.to_sym,
-      '1 pet'.to_sym => '1pet'.to_sym,
-      '1 peter'.to_sym => '1pet'.to_sym,
-
-      '2 pe'.to_sym => '2pet'.to_sym,
-      '2 pet'.to_sym => '2pet'.to_sym,
-      '2 peter'.to_sym => '2pet'.to_sym,
-
-      '1 jn'.to_sym => '1john'.to_sym,
-      '1 jo'.to_sym => '1john'.to_sym,
-      '1 joh'.to_sym => '1john'.to_sym,
-      '1 john'.to_sym => '1john'.to_sym,
-
-      '2 jn'.to_sym => '2john'.to_sym,
-      '2 jo'.to_sym => '2john'.to_sym,
-      '2 joh'.to_sym => '2john'.to_sym,
-      '2 john'.to_sym => '2john'.to_sym,
-
-      '3 jn'.to_sym => '3john'.to_sym,
-      '3 jo'.to_sym => '3john'.to_sym,
-      '3 joh'.to_sym => '3john'.to_sym,
-      '3 john'.to_sym => '3john'.to_sym,
-
-      jude: :jude,
-
-      re: :rev,
-      rev: :rev,
-      revel: :rev,
-      revelation: :rev,
+      gen: [:ge, :gen, :gene, :genes, :genesis, :gn],
+      exod: [:ex, :exo, :exod, :exodus],
+      lev: [:le, :lev, :levit, :leviticus],
+      num: [:nm, :nu, :num, :numb, :numbers],
+      deut: [:de, :deu, :deut, :deuter, :deuteronomy, :dt],
+      josh: [:jos, :josh, :joshua],
+      judg: [:jd, :jdg, :judg, :judges],
+      ruth: [:ruth],
+      :"1sam" => [:"1 sa", :"1 sam", :"1 samuel"],
+      :"2sam" => [:"2 sa", :"2 sam", :"2 samuel"],
+      :"1kings" => [:"1 kgs", :"1 ki", :"1 king", :"1 kings", :"1 kngs"],
+      :"2kings" => [:"2 kgs", :"2 ki", :"2 king", :"2 kings", :"2 kngs"],
+      :"1chr" => [:"1 ch", :"1 chr", :"1 chro", :"1 chron", :"1 chronicles"],
+      :"2chr" => [:"2 ch", :"2 chr", :"2 chro", :"2 chron", :"2 chronicles"],
+      ezra: [:ezr, :ezra],
+      neh: [:ne, :neh, :nehem, :nehemiah],
+      esth: [:es, :est, :esth, :esther],
+      job: [:jo, :job],
+      ps: [:ps, :psa, :psal, :psalm, :psalms],
+      prov: [:pr, :pro, :prov, :proverbs],
+      eccl: [:ec, :ecc, :eccl, :eccles, :ecclesiastes],
+      song: [:so, :"song of solomon", :"song of songs", :"song of sol", :ss, :ssong],
+      isa: [:is, :isa, :isaiah],
+      jer: [:je, :jer, :jere, :jerem, :jeremiah],
+      lam: [:la, :lam, :lamen, :lament, :lamentations],
+      ezek: [:eze, :ezek, :ezekiel],
+      dan: [:da, :dan, :daniel],
+      hos: [:ho, :hos, :hosea],
+      joel: [:joe, :joel],
+      amos: [:am, :amos],
+      obad: [:ob, :oba, :obad, :obadiah],
+      jonah: [:jon, :jona, :jonah],
+      mic: [:mi, :mic, :micah],
+      nah: [:na, :nah, :nahum],
+      hab: [:hab, :habak, :habakkuk],
+      zeph: [:zep, :zeph, :zephaniah],
+      hag: [:hag, :hagg, :haggai],
+      zech: [:zec, :zech, :zechariah],
+      mal: [:mal, :malac, :malach, :malachi],
+      matt: [:mat, :matt, :matth, :matthew, :mt],
+      mark: [:mar, :mark, :mr, :mrk],
+      luke: [:lk, :lke, :lu, :luk, :luke],
+      john: [:jhn, :jn, :joh, :john],
+      acts: [:ac, :act, :acts],
+      rom: [:ro, :rom, :roman, :romans],
+      :"1cor" => [:"1 co", :"1 cor", :"1 corin", :"1 corinth", :"1 corinthians"],
+      :"2cor" => [:"2 co", :"2 cor", :"2 corin", :"2 corinth", :"2 corinthians"],
+      gal: [:ga, :gal, :galat, :galatians],
+      eph: [:ep, :eph, :ephes, :ephesians],
+      phil: [:ph, :phi, :phil, :phili, :philip, :philipp, :philippians, :php],
+      col: [:co, :col, :colo, :colos, :coloss, :colossians],
+      :"1tim" => [:"1 ti", :"1 tim", :"1 timothy"],
+      :"2tim" => [:"2 ti", :"2 tim", :"2 timothy"],
+      :"1thess" => [:"1 th", :"1 the", :"1 thes", :"1 thess", :"1 thessalonians"],
+      :"2thess" => [:"2 th", :"2 the", :"2 thes", :"2 thess", :"2 thessalonians"],
+      titus: [:tit, :titu, :titus],
+      phlm: [:phile, :philem, :philemon, :phlm, :phlmn, :phm, :phmn],
+      heb: [:he, :heb, :hebr, :hebrews],
+      jas: [:ja, :jam, :james, :jas],
+      :"1pet" => [:"1 pe", :"1 pet", :"1 peter"],
+      :"2pet" => [:"2 pe", :"2 pet", :"2 peter"],
+      :"1john" => [:"1 jn", :"1 jo", :"1 joh", :"1 john"],
+      :"2john" => [:"2 jn", :"2 jo", :"2 joh", :"2 john"],
+      :"3john" => [:"3 jn", :"3 jo", :"3 joh", :"3 john"],
+      jude: [:jude],
+      rev: [:re, :rev, :revel, :revelation]
     }
 
     def keyify(book_name, raise_errors = true)
-      translation = TRANSLATIONS[normalize_input(book_name)]
+      translation = BookKeyTranslator.translations[normalize_input(book_name)]
       if translation
         return translation
       elsif raise_errors
@@ -345,6 +85,14 @@ module BiblePassage
       book_name.strip.downcase.gsub(/\s+/, ' ').to_sym
     end
 
+    def self.translations
+      @@translations ||= Hash[
+        TRANSLATIONS.flat_map do |book, abbrevs|
+          abbrevs.map do |abbrev|
+            [abbrev, book]
+          end
+        end
+      ]
+    end
   end
-
 end
